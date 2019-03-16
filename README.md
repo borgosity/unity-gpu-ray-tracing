@@ -1,4 +1,4 @@
-# unity-gpu-raycasting
+# unity-gpu-ray-tracing
 GPU Raycasting in Unity
 
 Following tutorial from blog:
