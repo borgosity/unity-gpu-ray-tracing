@@ -43,7 +43,7 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                return flaot4(tex2D(_MainTex, i.uv).rgb, 1.0f / (_Sample + 1.0f));
+                return float4(tex2D(_MainTex, i.uv).rgb, 1.0f / (_Sample + 1.0f));
             }
             ENDCG
         }
