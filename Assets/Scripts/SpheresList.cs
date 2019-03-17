@@ -12,16 +12,10 @@ public class SpheresList : ScriptableObject
     private int numOfSpheres = 10;
     [SerializeField]
     private float areaRadiusSize = 20;
+
     [SerializeField]
-    private GameObject spherePrefab;
-    [SerializeField]
-    private Vector3 parentInitialPosition;
-    [SerializeField]
-    private GameObject parentPrefab;
-    [SerializeField]
-    private List<GameObject> spheresList = new List<GameObject>();
-    private GameObject tempSphere = null;
-    private GameObject parentObject;
+    private List<Sphere> spheresList = new List<Sphere>();
+    private Sphere tempSphere;
 
     public int SphereCount
     {
@@ -32,7 +26,7 @@ public class SpheresList : ScriptableObject
             return spheresList.Count;
         }
     }
-    public GameObject[] Spheres
+    public Sphere[] Spheres
     {
         get
         {
@@ -42,24 +36,22 @@ public class SpheresList : ScriptableObject
         }
     }
 
-    private void OnDisable()
+    public void ClearSpheres()
     {
         spheresList.Clear();
     }
 
     private void GenerateSpheres()
     {
-        if (parentObject == null)
-        {
-            parentObject = Instantiate(parentPrefab);
-            parentObject.transform.position = parentInitialPosition;
-        }
-
         for(int i = 0; i < numOfSpheres; i++)
         {
-            tempSphere = Instantiate(spherePrefab);
-            tempSphere.transform.SetParent(parentObject.transform);
-            tempSphere.transform.position = RandomPostion();
+            tempSphere = new Sphere();
+            tempSphere.radius = Random.Range(sizeRange.x, sizeRange.y);
+            tempSphere.position = RandomPostion();
+            Color color = Random.ColorHSV();
+            bool metal = Random.value < 0.5f;
+            tempSphere.albedo = metal ? Vector4.zero : new Vector4(color.r, color.g, color.b);
+            tempSphere.specular = metal ? new Vector4(color.r, color.g, color.b) : new Vector4(0.4f, 0.4f, 0.4f); ;
             spheresList.Add(tempSphere);
         }
     }

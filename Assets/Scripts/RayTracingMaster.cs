@@ -44,6 +44,7 @@ public class RayTracingMaster : MonoBehaviour
     {
         if (sphereBuffer != null)
             sphereBuffer.Release();
+        spheresList.ClearSpheres();
     }
 
     private void Update()
@@ -57,10 +58,14 @@ public class RayTracingMaster : MonoBehaviour
 
     private void SetShaderParameters()
     {
+        rayTracingShader.SetTexture(0, "_SkyboxTexture", skyboxTexture);
         rayTracingShader.SetMatrix("_CameraToWorld", renderCamera.cameraToWorldMatrix);
         rayTracingShader.SetMatrix("_CameraInverseProjection", renderCamera.projectionMatrix.inverse);
-        rayTracingShader.SetTexture(0, "_SkyboxTexture", skyboxTexture);
         rayTracingShader.SetVector("_PixelOffset", new Vector2(UnityEngine.Random.value, UnityEngine.Random.value));
+        if(sphereBuffer != null)
+        {
+            rayTracingShader.SetBuffer(0, "_Spheres", sphereBuffer);
+        }
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)

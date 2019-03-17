@@ -13,6 +13,16 @@ static const float PI = 3.14159265f;
 
 float2 _PixelOffset;
 
+struct Sphere
+{
+    float3 position;
+    float radius;
+    float3 albedo;
+    float3 specular;
+};
+
+StructuredBuffer<Sphere> _Spheres;
+
 struct Ray
 {
     float3 origin;
@@ -25,6 +35,8 @@ struct RayHit
     float3 position;
     float distance;
     float3 normal;
+    float3 albedo;
+    float3 specular;
 };
 
 RayHit CreateRayHit()
@@ -33,6 +45,8 @@ RayHit CreateRayHit()
     hit.position = float3(0.0f, 0.0f, 0.0f);
     hit.distance = 1.#INF;
     hit.normal = float3(0.0f, 0.0f, 0.0f);
+    hit.albedo = float3(0.0f, 0.0f, 0.0f);
+    hit.specular = float3(0.0f, 0.0f, 0.0f);
     return hit;
 }
 
@@ -66,14 +80,17 @@ void IntersectGroundPlane(Ray ray, inout RayHit bestHit)
 		bestHit.distance = t;
 		bestHit.position = ray.origin + t * ray.direction;
 		bestHit.normal = float3(0.0f, 1.0f, 0.0f);
-	}
+        bestHit.albedo = 0.8f;
+        bestHit.specular = 0.3f;
+    }
 }
 
-void IntersectSphere(Ray ray, inout RayHit bestHit, float4 sphere)
+void IntersectSphere(Ray ray, inout RayHit bestHit, uint sphereIndex)
 {
-    float3 d = ray.origin - sphere.xyz;
+    Sphere sphere = _Spheres[sphereIndex];
+    float3 d = ray.origin - sphere.position;
     float p1 = -dot(ray.direction, d);
-    float p2sqr = p1 * p1 - dot(d, d) + sphere.w * sphere.w;
+    float p2sqr = p1 * p1 - dot(d, d) + sphere.radius * sphere.radius;
     if (p2sqr < 0)
     {
         return;
@@ -84,7 +101,9 @@ void IntersectSphere(Ray ray, inout RayHit bestHit, float4 sphere)
     {
         bestHit.distance = t;
         bestHit.position = ray.origin + t * ray.direction;
-        bestHit.normal = normalize(bestHit.position - sphere.xyz);
+        bestHit.normal = normalize(bestHit.position - sphere.position);
+        bestHit.albedo = sphere.albedo;
+        bestHit.specular = sphere.specular;
     }
 }
 
@@ -92,7 +111,13 @@ RayHit Trace(Ray ray)
 {
 	RayHit bestHit = CreateRayHit();
 	IntersectGroundPlane(ray, bestHit);
-    IntersectSphere(ray, bestHit, float4(0, 3.0f, 0, 1.0f));
+	// Spheres
+    uint numSpheres, stride;
+    _Spheres.GetDimensions(numSpheres, stride);
+    for (uint i = 0; i < numSpheres; i++)
+    {
+        IntersectSphere(ray, bestHit, i);
+    }
 	return bestHit;
 }
 
