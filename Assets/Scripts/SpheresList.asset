@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462e99d5f4afe4f49b339e31d675dc04, type: 3}
+  m_Name: SpheresList
+  m_EditorClassIdentifier: 
+  sizeRange: {x: 0.2, y: 1.5}
+  numOfSpheres: 10
+  areaRadiusSize: 20
+  spherePrefab: {fileID: 8798092540345359460, guid: bb7ecec551f4fac4b99827c9e03d1d08,
+    type: 3}
+  parentInitialPosition: {x: 0, y: 1, z: 0}
+  parentPrefab: {fileID: 4502218120114902211, guid: 31794c01aee8e664e8e81ec16510b3af,
+    type: 3}

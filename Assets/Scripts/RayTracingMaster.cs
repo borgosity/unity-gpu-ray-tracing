@@ -11,15 +11,39 @@ public class RayTracingMaster : MonoBehaviour
     private Vector3 numThreads = new Vector3(8, 8, 1);
     [SerializeField]
     private Texture skyboxTexture;
+    [SerializeField]
+    private SpheresList spheresList;
 
     private RenderTexture target;
     private Camera renderCamera;
     private uint currentSample = 0;
     private Material addMaterial;
 
+    private ComputeBuffer sphereBuffer;
+
     private void Awake()
     {
         renderCamera = GetComponent<Camera>();
+    }
+
+    private void OnEnable()
+    {
+        SetupScene();
+    }
+
+    private void SetupScene()
+    {
+        if (sphereBuffer != null)
+            sphereBuffer.Release();
+
+        sphereBuffer = new ComputeBuffer(spheresList.SphereCount, 40);
+        sphereBuffer.SetData(spheresList.Spheres);
+    }
+
+    private void OnDisable()
+    {
+        if (sphereBuffer != null)
+            sphereBuffer.Release();
     }
 
     private void Update()
