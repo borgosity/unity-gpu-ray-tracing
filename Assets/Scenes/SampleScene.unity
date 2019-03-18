@@ -279,4 +279,5 @@ MonoBehaviour:
   rayTracingShader: {fileID: 7200000, guid: da310f180e1155a40b45356910ebce5b, type: 3}
   numThreads: {x: 8, y: 8, z: 1}
   skyboxTexture: {fileID: 2800000, guid: 7a271056439bb6047ab851c36484e11e, type: 3}
+  directionalLight: {fileID: 170076734}
   spheresList: {fileID: 11400000, guid: c48c057abb6311a459734ce4084c74d8, type: 2}

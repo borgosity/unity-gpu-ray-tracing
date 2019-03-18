@@ -47,7 +47,7 @@ public class SpheresList : ScriptableObject
         {
             tempSphere = new Sphere();
             tempSphere.radius = Random.Range(sizeRange.x, sizeRange.y);
-            tempSphere.position = RandomPostion();
+            tempSphere.position = RandomPostion(tempSphere.radius);
             Color color = Random.ColorHSV();
             bool metal = Random.value < 0.5f;
             tempSphere.albedo = metal ? Vector4.zero : new Vector4(color.r, color.g, color.b);
@@ -56,10 +56,10 @@ public class SpheresList : ScriptableObject
         }
     }
 
-    private Vector3 RandomPostion()
+    private Vector3 RandomPostion(float radius)
     {
         Vector2 position = Random.insideUnitCircle * areaRadiusSize;
-        return new Vector3(position.x, 0, position.y);
+        return new Vector3(position.x, tempSphere.radius, position.y);
     }
 
 }

@@ -12,6 +12,8 @@ public class RayTracingMaster : MonoBehaviour
     [SerializeField]
     private Texture skyboxTexture;
     [SerializeField]
+    private Light directionalLight;
+    [SerializeField]
     private SpheresList spheresList;
 
     private RenderTexture target;
@@ -28,6 +30,7 @@ public class RayTracingMaster : MonoBehaviour
 
     private void OnEnable()
     {
+        currentSample = 0;
         SetupScene();
     }
 
@@ -54,6 +57,11 @@ public class RayTracingMaster : MonoBehaviour
             currentSample = 0;
             transform.hasChanged = false;
         }
+        if(directionalLight.transform.hasChanged)
+        {
+            currentSample = 0;
+            directionalLight.transform.hasChanged = false;
+        }
     }
 
     private void SetShaderParameters()
@@ -62,6 +70,9 @@ public class RayTracingMaster : MonoBehaviour
         rayTracingShader.SetMatrix("_CameraToWorld", renderCamera.cameraToWorldMatrix);
         rayTracingShader.SetMatrix("_CameraInverseProjection", renderCamera.projectionMatrix.inverse);
         rayTracingShader.SetVector("_PixelOffset", new Vector2(UnityEngine.Random.value, UnityEngine.Random.value));
+        Vector3 lightDir = directionalLight.transform.forward;
+        rayTracingShader.SetVector("_DirectionalLight", new Vector4(lightDir.x, lightDir.y, lightDir.z, directionalLight.intensity));
+
         if(sphereBuffer != null)
         {
             rayTracingShader.SetBuffer(0, "_Spheres", sphereBuffer);
@@ -107,6 +118,8 @@ public class RayTracingMaster : MonoBehaviour
             target = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear);
             target.enableRandomWrite = true;
             target.Create();
+
+            currentSample = 0;
         }
     }
 

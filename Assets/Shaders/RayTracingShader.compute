@@ -12,6 +12,7 @@ SamplerState sampler_SkyboxTexture;
 static const float PI = 3.14159265f;
 
 float2 _PixelOffset;
+float4 _DirectionalLight;
 
 struct Sphere
 {
@@ -80,8 +81,8 @@ void IntersectGroundPlane(Ray ray, inout RayHit bestHit)
 		bestHit.distance = t;
 		bestHit.position = ray.origin + t * ray.direction;
 		bestHit.normal = float3(0.0f, 1.0f, 0.0f);
-        bestHit.albedo = 0.8f;
-        bestHit.specular = 0.3f;
+        bestHit.albedo = 0.5f;
+        bestHit.specular = 0.03f;
     }
 }
 
@@ -125,13 +126,21 @@ float3 Shade(inout Ray ray, RayHit hit)
 {
     if (hit.distance < 1.#INF)
     {
-        float3 specular = float3(0.6f, 0.6f, 0.6f);
 		// reflect the ray and multiply energy with specular reflection
         ray.origin = hit.position + hit.normal * 0.001f;
         ray.direction = reflect(ray.direction, hit.normal);
-        ray.energy *= specular;
+        ray.energy *= hit.specular;
+        // shadow test
+        bool shadow = false;
+        Ray shadowRay = CreateRay(hit.position + hit.normal * 0.001f, -1 * _DirectionalLight.xyz);
+        RayHit shadowHit = Trace(shadowRay);
+        if (shadowHit.distance != 1.#INF)
+        {
+            return float3(0.0f, 0.0f, 0.0f);
+        }
+
 		// return nothing
-        return float3(0.0f, 0.0f, 0.0f);
+            return saturate(dot(hit.normal, _DirectionalLight.xyz) * -1) * _DirectionalLight * hit.albedo;
     }
     else
     {
@@ -140,7 +149,7 @@ float3 Shade(inout Ray ray, RayHit hit)
         // sample skybox and write it
         float theta = acos(ray.direction.y) / -PI;
         float phi = atan2(ray.direction.x, -ray.direction.z) / -PI * 0.5f;
-        return _SkyboxTexture.SampleLevel(sampler_SkyboxTexture, float2(phi, theta), 0).xyz;
+        return _SkyboxTexture.SampleLevel(sampler_SkyboxTexture, float2(phi, theta), 0).xyz * 1.8f;
     }
 }
 
